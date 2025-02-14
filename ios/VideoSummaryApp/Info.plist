@@ -53,5 +53,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>whatsapp</string>
+        <string>twitter</string>
+        <string>facebook</string>
+    </array>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to share videos</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to your photo library to save videos</string>
 </dict>
 </plist>

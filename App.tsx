@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
     Button,
@@ -16,6 +17,7 @@ import {
     Text,
     useColorScheme,
     View,
+    Platform,
 } from 'react-native';
 
 import {
@@ -27,6 +29,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import {Asset, launchImageLibrary} from 'react-native-image-picker';
+import Share from 'react-native-share';
 
 type SectionProps = PropsWithChildren<{
     title: string;
@@ -59,6 +62,7 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 }
 
 function App(): React.JSX.Element {
+    const [videoUri, setVideoUri] = useState<string | null>(null);
     const isDarkMode = useColorScheme() === 'dark';
 
     const backgroundStyle = {
@@ -76,11 +80,33 @@ function App(): React.JSX.Element {
                 console.log('Error:', response.errorMessage);
             } else {
                 if (response.assets && response.assets.length > 0) {
-                    const selectedVideo = response.assets[0];
-                    setVideo(selectedVideo);
+                    const selectedVideo = response.assets[0].uri;
+                    if (selectedVideo) {
+                        setVideoUri(selectedVideo);
+                    }
                 }
             }
         });
+    };
+
+    const shareVideo = async () => {
+        if (!videoUri) {
+            console.warn('No video selected');
+            return;
+        }
+
+        try {
+            const shareOptions = {
+                title: 'Share Video',
+                url:
+                    Platform.OS === 'android' ? `file://${videoUri}` : videoUri,
+                type: 'video/mp4',
+            };
+
+            await Share.open(shareOptions);
+        } catch (error) {
+            console.error('Error sharing video:', error);
+        }
     };
 
     return (
@@ -101,6 +127,9 @@ function App(): React.JSX.Element {
                     }}>
                     <Section title="Step One">Hello world!</Section>
                     <Button title="Select Video" onPress={handleSelectVideo} />
+                    {videoUri && (
+                        <Button title="Share Video" onPress={shareVideo} />
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>
